@@ -6,8 +6,8 @@ A Flask-based web application that performs real-time object detection on an upl
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repository-url>
-   cd <your-project-directory>
+   git clone https://github.com/isocyanate23/neuro-mini-project.git
+   cd neuro-mini-project
    ```
 
 2. **Create a virtual environment** (recommended)
