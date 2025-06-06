@@ -2,12 +2,6 @@
 
 A Flask-based web application that performs real-time object detection using YOLOv8 and streams the results to a web interface.
 
-## Technologies Used
-
-- **Flask**: Web framework for Python
-- **OpenCV**: Computer vision library for image processing
-- **Ultralytics YOLOv8**: State-of-the-art object detection model
-
 ## Installation
 
 1. **Clone the repository**
