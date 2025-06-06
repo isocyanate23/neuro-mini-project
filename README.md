@@ -1,6 +1,6 @@
 # Real-time Object Detection Web Application
 
-A Flask-based web application that performs real-time object detection using YOLOv8 and streams the results to a web interface.
+A Flask-based web application that performs real-time object detection on an uploaded video.
 
 ## Installation
 
@@ -38,27 +38,13 @@ your-project/
 
 ## Usage
 
-1. **Start the application**
+**Start the application**
    ```bash
    export FLASK_APP=app
    export FLASK_ENV=development
    flask run
    ```
    Open the link in the terminal
-
-2. **View real-time detection**
-   - The application will start streaming your webcam feed
-   - Detected objects will be highlighted with bounding boxes and labels
-
-
-## Customization
-
-### Changing Camera Source
-To use a different camera or video file:
-```python
-cap = cv2.VideoCapture(1)  # Use camera index 1
-cap = cv2.VideoCapture('path/to/video.mp4')  # Use video file
-```
 
 
 ## Contributing
