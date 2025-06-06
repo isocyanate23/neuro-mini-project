@@ -2,57 +2,338 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>YOLOv8 Object Detection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLOv8 Video Upload Object Detection</title>
+    <!-- Using a common, readable font -->
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Base styles for the body and overall layout */
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+            background: #f0f2f5; /* Light grey background for a modern look */
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
+            flex-direction: column; /* Stack header, main, and footer vertically */
+            align-items: center; /* Center content horizontally */
+            justify-content: flex-start; /* Align content to the top */
+            min-height: 100vh; /* Full viewport height */
+            line-height: 1.6; /* Improved readability for text */
+            color: #333; /* Default text color */
         }
 
+        /* Header styling */
         header {
             width: 100%;
-            padding: 20px 0;
-            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            padding: 30px 0; /* More vertical padding */
+            background: linear-gradient(135deg, #4e54c8, #8f94fb); /* Gradient background */
             text-align: center;
             color: white;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Soft shadow for depth */
+            position: sticky; /* Makes header stick to the top on scroll */
+            top: 0; /* Stays at the very top */
+            z-index: 1000; /* Ensures it stays on top of other content */
         }
 
         header h1 {
             margin: 0;
-            font-size: 2rem;
+            font-size: 2.5rem; /* Larger heading */
+            font-weight: 700; /* Bolder font weight */
         }
 
+        header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1rem; /* Slightly larger paragraph text */
+            opacity: 0.9; /* Slightly transparent */
+        }
+
+        /* Main content area styling */
         main {
-            margin-top: 40px;
+            margin-top: 40px; /* Space from the header */
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-direction: column; /* Stack sections vertically */
+            align-items: center; /* Center sections horizontally */
+            width: 100%;
+            max-width: 900px; /* Maximum width for the content area */
+            padding: 20px; /* Padding around the main content */
+            gap: 30px; /* Space between flex items (sections) */
+            box-sizing: border-box; /* Include padding in width calculation */
         }
 
+        /* Styling for card-like sections (upload and info) */
+        .upload-section,
+        .info-panel {
+            background: white;
+            padding: 30px; /* Consistent internal padding */
+            border-radius: 16px; /* Rounded corners */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Deeper shadow */
+            width: 100%;
+            max-width: 650px; /* Max width for these sections */
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* Headings within sections */
+        .upload-section h2,
+        .info-panel h3 {
+            margin: 0 0 25px 0; /* Space below headings */
+            color: #4e54c8; /* Primary blue color */
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* File input specific styles */
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px; /* Space below the file input */
+            width: 100%; /* Take full width of its container */
+            max-width: 300px; /* Max width for the button itself */
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0; /* Hide the default file input */
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2; /* Ensure it's clickable over the label */
+        }
+
+        .file-input-button {
+            display: block; /* Make it a block-level element */
+            width: 100%; /* Fill the wrapper width */
+            padding: 15px 24px; /* Generous padding */
+            background: linear-gradient(135deg, #4e54c8, #8f94fb); /* Gradient background */
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease; /* Smooth transitions for hover effects */
+            font-size: 1.1rem;
+            font-weight: 500;
+            border: none;
+            box-sizing: border-box; /* Include padding in the element's total width */
+            text-align: center;
+        }
+
+        .file-input-button:hover {
+            transform: translateY(-3px); /* Lift effect on hover */
+            box-shadow: 0 6px 12px rgba(78, 84, 200, 0.4); /* Stronger shadow on hover */
+        }
+
+        /* Upload button styling */
+        .upload-button {
+            background: linear-gradient(135deg, #28a745, #218838); /* Green gradient */
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 15px; /* Space from the file input */
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-button:hover {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Remove video button styling */
+        .remove-button {
+            background: linear-gradient(135deg, #dc3545, #c82333); /* Red gradient */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 20px; /* Space from the upload button */
+            transition: all 0.3s ease;
+            display: inline-block; /* Allows vertical margins */
+            text-decoration: none; /* Remove underline for link-turned-button */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .remove-button:hover {
+            background: linear-gradient(135deg, #c82333, #bb2d3b);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Video display container */
         .video-container {
-            border: 6px solid #8f94fb;
+            border: 6px solid #8f94fb; /* Border matching header gradient */
             border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            overflow: hidden; /* Ensures content stays within rounded corners */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); /* Stronger shadow for the main video */
+            background: #000; /* Black background for video area */
+            width: fit-content; /* Adjust width to fit content */
+            max-width: 100%; /* Ensures it doesn't overflow parent */
         }
 
         .video-container img {
-            width: 640px;
-            height: 480px;
+            width: 640px; /* Target width for desktop */
+            height: 480px; /* Target height for desktop */
             display: block;
+            object-fit: contain; /* Scales image to fit, maintaining aspect ratio */
+            max-width: 100%; /* Crucial for responsiveness: allows image to shrink */
+            height: auto; /* Maintains aspect ratio when width changes */
         }
 
-        @media (max-width: 700px) {
+        /* Message for no video uploaded */
+        .no-video-message {
+            background: #fff3cd; /* Light yellow background */
+            border: 2px dashed #ffc107; /* Dashed yellow border */
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: #856404;
+            font-size: 1.3rem;
+            font-weight: 500;
+            width: 100%;
+            max-width: 650px;
+            box-sizing: border-box;
+        }
+
+        /* Info panel (how it works) */
+        .info-panel {
+            padding: 30px; /* Increased padding for better content spacing */
+        }
+
+        .info-panel h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        .info-panel p {
+            margin: 8px 0; /* More vertical spacing between paragraphs */
+            color: #555;
+            font-size: 1.05rem;
+        }
+
+        /* Alert messages (success/error) */
+        .alert {
+            padding: 18px; /* More padding */
+            margin: 25px 0; /* More vertical margin */
+            border-radius: 10px; /* Slightly more rounded corners */
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            max-width: 650px;
+            box-sizing: border-box;
+        }
+
+        .alert-success {
+            background: #d4edda; /* Light green */
+            color: #155724; /* Dark green text */
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da; /* Light red */
+            color: #721c24; /* Dark red text */
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Supported formats text */
+        .supported-formats {
+            font-size: 0.95rem;
+            color: #666;
+            margin-top: 15px; /* Space from buttons */
+            font-weight: 400;
+        }
+
+        /* --- Responsive Design --- */
+
+        /* Styles for screens smaller than 768px (e.g., tablets and large phones) */
+        @media (max-width: 768px) {
+            header {
+                padding: 25px 15px;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+            header p {
+                font-size: 0.9rem;
+            }
+            main {
+                margin-top: 20px;
+                padding: 15px;
+                gap: 20px; /* Reduced gap between sections */
+            }
+            /* Remove individual vertical margins from sections, rely on main's gap */
+            .upload-section,
+            .info-panel,
+            .no-video-message,
+            .alert {
+                padding: 25px;
+                margin: 0;
+            }
+            .upload-section h2,
+            .info-panel h3 {
+                font-size: 1.6rem;
+            }
+            .file-input-button,
+            .upload-button {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+            .remove-button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            .video-container {
+                border-width: 4px; /* Thinner border for smaller screens */
+                border-radius: 12px;
+            }
             .video-container img {
-                width: 90vw;
-                height: auto;
+                width: 95vw; /* Occupy 95% of viewport width */
+                /* height: auto; is already set by default */
+            }
+            .no-video-message {
+                font-size: 1.1rem;
+                padding: 30px;
+            }
+        }
+
+        /* Styles for screens smaller than 500px (e.g., smaller phones) */
+        @media (max-width: 500px) {
+            header {
+                padding: 20px 10px;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+            main {
+                padding: 10px;
+            }
+            .upload-section,
+            .info-panel,
+            .no-video-message,
+            .alert {
+                padding: 20px;
+            }
+            .upload-section h2,
+            .info-panel h3 {
+                font-size: 1.4rem;
+            }
+            .file-input-button {
+                display: block; /* Ensure it takes full width */
+                width: 100%;
+                box-sizing: border-box;
+            }
+            /* Make buttons stack vertically and center them */
+            .upload-button, .remove-button {
+                width: calc(100% - 20px); /* Account for horizontal padding in container */
+                max-width: 300px; /* Prevent them from becoming too wide */
+                margin-left: auto; /* Center horizontally */
+                margin-right: auto;
+                display: block; /* Force them to stack */
             }
         }
     </style>
@@ -60,14 +341,74 @@
 <body>
 
 <header>
-    <h1>YOLOv8 Object Detection</h1>
+    <h1>YOLOv8 Video Upload Object Detection</h1>
+    <p>Upload a video file for real-time object detection</p>
 </header>
 
 <main>
-    <div class="video-container">
-        <img src="{{ url_for('video_feed') }}" alt="YOLOv8 Webcam Stream">
+    <!-- Flash Messages: Displays success/error messages from Flask -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Upload Section: Allows user to choose and upload a video file -->
+    <div class="upload-section">
+        <h2>Upload Video</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="file-input-wrapper">
+                <input type="file" name="video" accept="video/*" class="file-input" id="videoFile" required>
+                <label for="videoFile" class="file-input-button">Choose Video File</label>
+            </div>
+            <br>
+            <button type="submit" class="upload-button">Upload & Process</button>
+        </form>
+        <div class="supported-formats">
+            Supported formats: MP4, AVI, MOV, MKV, WMV, FLV, WebM (Max: 100MB)
+        </div>
+
+        {% if has_video %}
+            <a href="/remove_video" class="remove-button">Remove Current Video</a>
+        {% endif %}
+    </div>
+
+    <!-- Video Display Section: Shows the processed video stream -->
+    {% if has_video %}
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" alt="YOLOv8 Video Stream">
+        </div>
+    {% else %}
+        <div class="no-video-message">
+            📹 Please upload a video to start object detection
+        </div>
+    {% endif %}
+
+    <!-- Information Panel: Explains how the application works -->
+    <div class="info-panel">
+        <h3>How It Works</h3>
+        <p>1. Upload a video file using the form above</p>
+        <p>2. The YOLOv8 model processes each frame in real-time</p>
+        <p>3. Detected objects are highlighted with bounding boxes and confidence scores</p>
+        <p>4. The video loops continuously for demonstration</p>
     </div>
 </main>
+
+<script>
+    // JavaScript to update the file input button text with the selected filename
+    document.getElementById('videoFile').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || 'Choose Video File';
+        const label = document.querySelector('label[for="videoFile"]');
+        if (e.target.files[0]) {
+            // Trim filename if too long for display to prevent overflow
+            label.textContent = fileName.length > 25 ? fileName.substring(0, 22) + '...' : fileName;
+        } else {
+            label.textContent = 'Choose Video File';
+        }
+    });
+</script>
 
 </body>
 </html>
