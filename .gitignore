@@ -34,3 +34,6 @@ instance/
 
 # VS Code
 .vscode/
+
+# Model weights or large files
+*.pt
